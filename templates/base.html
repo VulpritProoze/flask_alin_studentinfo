@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+	<meta charset='utf-8'>
+	<link rel='stylesheet' href='/static/css/main.css'>
+	<script src='/static/js/scripts.js'></script>
+	<script>
+		const imgDefaultSrc = "{{ url_for('static', filename='img/avatar/personicon.png') }}";
+	</script>
+	<title>Student Information App v1.0</title>
+</head>
+<body class="flex flex-col min-h-screen">
+	{% if header %}
+	<header class="text-gray-600 body-font bg-blue-200">
+		<div class="container mx-auto flex flex-wrap p-8 flex-col md:flex-row items-center">
+			<a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+				<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+				</svg>
+				<span class="ml-3 text-xl">Student Information Table</span>
+			</a>
+			<nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+			</nav>
+			<button onclick="addStudent()" class="mr-1 inline-flex items-center bg-green-500 text-white border-0 py-1 px-3 focus:outline-none hover:bg-green-600 rounded text-base mt-4 md:mt-0">Add Student
+			</button>
+			<button type='button' onclick="location.href='/logout'" class="inline-flex items-center bg-blue-500 text-white border-0 py-1 px-3 focus:outline-none hover:bg-indigo-600 rounded text-base mt-4 md:mt-0">Log-out
+			</button>
+		</div>
+	</header>
+	{% endif %}
+	<div class='flex-grow'>
+		{% block content %}
+		{% endblock %}
+	</div>
+	<footer class="text-gray-600 body-font">
+		<div class="bg-gray-100">
+			<div class="container mx-auto py-4 px-5 flex justify-center">
+				<p class="text-gray-500 text-sm text-center sm:text-left">&copy; 2024, Alin, Ram Railey</p>
+			</div>
+		</div>
+	</footer>
+</body>
+</html> 

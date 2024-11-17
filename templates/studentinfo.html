@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+    {% if messages%}
+        {% for message in messages %}
+            <div class='mb-1 w-full h-14 text-black bg-yellow-500 flex items-center justify-start p-8'>
+                <p>{{message}}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<div class="flex flex-col mt-3">
+	<div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+		<div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+			<div class="overflow-hidden">
+				<table id='student-table' class="min-w-full text-left text-sm text-surface">
+					<thead
+					class="border-b border-neutral-200 font-medium">
+						<tr>
+						<th scope="col" class="px-6 py-4">IDNO</th>
+						<th scope="col" class="px-6 py-4">Lastname</th>
+						<th scope="col" class="px-6 py-4">Firstname</th>
+						<th scope="col" class="px-6 py-4">Course</th>
+						<th scope="col" class="px-6 py-4">Level</th>
+						<th scope="col" class="px-6 py-4">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for student in students %}
+						<tr id='tr2'
+						class="border-b border-neutral-200 transition duration-300 ease-in-out hover:bg-neutral-100">
+							<td class="whitespace-nowrap px-6 py-4 font-medium">{{ student["idno"] }}</td>
+							<td class="whitespace-nowrap px-6 py-4">{{ student["lastname"].title() }}</td>
+							<td class="whitespace-nowrap px-6 py-4">{{ student["firstname"].title() }}</td>
+							<td class="whitespace-nowrap px-6 py-4">{{ student["course"].upper() }}</td>
+							<td class="whitespace-nowrap px-6 py-4">{{ student["level"] }}</td>
+							<td class="whitespace-nowrap px-6 py-4">
+								<button class="text-white bg-yellow-500 border-0 py-2 px-6 focus:outline-none 
+								hover:bg-yellow-600 rounded" 
+								onclick="editStudent(
+									'{{ student['idno'] }}',
+									'{{ student['lastname'] }}',
+									'{{ student['firstname'] }}',
+									'{{ student['course'] }}',
+									'{{ student['level'] }}',
+									'{{ student['image'] }}')">Edit</button>
+								<form id='delete-student-form' method='post' action='/delete_student' enctype='multipart/form-data'
+								class='my-1' onsubmit="return confirm('Do you really want to delete this student?');">
+									<input type='hidden' name='delete-student-input' id='delete-student-input' value=''>
+									<button type='submit' form='delete-student-form' class="text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded" onclick="deleteStudent('{{ student['idno'] }}')">Delete</button>
+								</form>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<span class='text-black flex px-6 my-7 ml-5 hidden font-small' id='aftertable'>Nothing follows....</span>
+				<script>
+					const table = document.querySelectorAll('#student-table tbody #tr2')
+					if (table.length == 0)  {
+						document.getElementById('aftertable').classList.remove('hidden')
+					} else {
+						document.getElementById('aftertable').classList.add('hidden')
+
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+<div id='student-modal' class="hidden opacity-0 fixed left-0 top-0 bg-black bg-opacity-50 w-screen h-screen flex justify-center items-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+	<div class='bg-white rounded p-8 w-1/3 shadow-md flex relative z-10 lg:w-1/3 md:w-1/2 x-sm:w-10/12'>
+		<form id='modal-form' method='post' action="" enctype='multipart/form-data' class='w-[100%]' onsubmit='return checkIfFieldsExists();'>
+			<div class='w-[100%]'>
+				<label for='uploadimage'>
+					<img id='image' class='h-24 m-auto' src="{{ url_for('static', filename='img/avatar/personicon.png') }}">
+					<input type='file' id='uploadimage' name='uploadimage' class='hidden' onchange='readURI(this)'>
+				</label>
+			</div>
+			<div class='grid grid-rows-6 grid-flow-col mt-5'>
+				<p>
+					<label>IDNO</label>
+			        <input type="text" name="idno" id="idno" class="mt-3 border-0 ring-1 ring-inset ring-gray-300 bg-transparent py-1.5 pl-2 text-gray-900 placeholder:text-gray-400 sm:text-sm/6 w-[100%] focus:outline-none focus:ring-indigo-500 focus:ring-2">
+				</p>
+				<p>
+					<label>Lastname</label>
+					<input type='text' id='lastname' name='lastname' class='mt-3 border-0 ring-1 ring-inset ring-gray-300 bg-transparent py-1.5 pl-2 text-gray-900 placeholder:text-gray-400 sm:text-sm/6 w-[100%] focus:outline-none focus:ring-indigo-500 focus:ring-2'>
+				</p>
+				<p>
+					<label>Firstname</label>
+					<input type='text' id='firstname' name='firstname' class='mt-3 border-0 ring-1 ring-inset ring-gray-300 bg-transparent py-1.5 pl-2 text-gray-900 placeholder:text-gray-400 sm:text-sm/6 w-[100%] focus:outline-none focus:ring-indigo-500 focus:ring-2'>
+				</p>
+				<p>
+					<label>Course</label>
+					<input type='text' id='course' name='course' class='mt-3 border-0 ring-1 ring-inset ring-gray-300 bg-transparent py-1.5 pl-2 text-gray-900 placeholder:text-gray-400 sm:text-sm/6 w-[100%] focus:outline-none focus:ring-indigo-500 focus:ring-2'>
+				</p>
+				<p>
+					<label>Level</label>
+					<input type='text' id='level' name='level' class='mt-3 border-0 ring-1 ring-inset ring-gray-300 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 sm:text-sm/6 w-[100%] focus:outline-none focus:ring-indigo-500 focus:ring-2'>
+				</p>
+				<input type='hidden' value='0' id='flag' name='flag'>
+			</div>
+			<div class='flex flex-row flex-row-reverse gap-2'>
+				<button type='submit' value='submit' form='modal-form' class='right text-white bg-green-500 border-0 py-2 px-6 focus:outline-none hover:bg-green-600 rounded'
+				onclick=''>Submit</button>
+				<button type='button' class='right text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded' 
+				onclick='cancelStudent()'>Cancel</button>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}
