@@ -33,9 +33,17 @@ def delete_record(table:str, **kwargs) -> bool:
 	print("Delete Record: ", sql)
 	return postprocess(sql)
 
+# def add_record(table:str, **kwargs) -> bool:
+# 	sql:str = f"INSERT INTO {table} ({','.join(kwargs.keys())}) VALUES({','.join(f"'{w}'" for w in list(kwargs.values()))})"
+# 	print("Add Record: ", sql)
+# 	return postprocess(sql)
+
 def add_record(table:str, **kwargs) -> bool:
-	sql:str = f"INSERT INTO {table} ({','.join(kwargs.keys())}) VALUES({','.join(f'\"{w}\"' for w in list(kwargs.values()))})"
-	print("Add Record: ", sql)
+	keys:list = list(kwargs.keys())
+	values:list = list(kwargs.values())
+	fields:str = "`, `".join(keys)
+	data:str = "','".join(values) 
+	sql:str = f"INSERT INTO `{table}` (`{fields}`) VALUES('{data}')"
 	return postprocess(sql)
 
 def update_record(table:str, **kwargs) -> bool:
